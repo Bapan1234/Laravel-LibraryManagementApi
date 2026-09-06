@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\storeBookRequest;
+use App\Http\Requests\updateBookRequest;
 use App\Http\Resources\BookResource;
 use App\Models\Book;
 
@@ -74,7 +75,7 @@ class BookController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(storeBookRequest $request, Book $book)
+    public function update(updateBookRequest $request, Book $book)
     {
         $book->update($request->validated());
 
@@ -86,7 +87,13 @@ class BookController extends Controller
      */
     public function destroy(string $id)
     {
-        $book = Book::find($id)->delete();
-        return response()->json(['message'=>'Data was deleted']);
+        try{
+            $book = Book::findOrFail($id)->delete();
+            return response()->json(['message'=>'Data was deleted']);
+        }
+        catch(\Exception $e){
+            return response()->json(['message'=>'Book wan Not found']);
+        }
+
     }
 }

@@ -6,7 +6,7 @@ use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class storeBookRequest extends FormRequest
+class updateBookRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,7 +26,8 @@ class storeBookRequest extends FormRequest
         return [
             'title'=>'required|string|max:255',
             'description'=>'nullable|string',
-            'isbn'=>'required|string',
+            'isbn'=>['required','string',
+                    Rule::unique('books','isbn')->ignore($this->route('book')->id)],
             'author_id'=>'required|exists:authors,id',
             'genre'=>'nullable|string',
             'publish_at'=>'nullable|date',
