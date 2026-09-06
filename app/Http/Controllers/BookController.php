@@ -13,11 +13,32 @@ class BookController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $books = Book::all();
+        $query = Book::with('author');
 
-        return response()->json(['Book'=>$books]);
+        //search functionality
+        if($request->has('search'))
+        {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                ->orWhere('isbn','like', "%{$search}%")
+                ->orWhereHas('author',function($authorQuery) use ($search){
+                    $authorQuery->where('name', 'like', "%{$search}%");
+                });
+            });
+        }
+
+        if($request->has('genre'))
+        {
+            $query->where('genre', $request->genre);
+        }
+
+        $books = $query->paginate(10);
+
+        //return response()->json(['Book'=>$books]);
+        return BookResource::collection($books);
     }
 
     /**
@@ -26,6 +47,7 @@ class BookController extends Controller
     public function store(storeBookRequest $request)
     {
         $book= Book::create($request->validated());
+        $book->load('author');
 
         // return response()->json(['message'=>'Data was create sucessfull']);
         return new BookResource($book);
@@ -34,10 +56,19 @@ class BookController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Book $book)
+    public function show(string $id)
     {
-        // $book = Book::find($id);
-        return new BookResource($book);
+        try{
+            $book=Book::findOrFail($id);
+            $book->load('author');
+            return new BookResource($book);
+        }
+        catch(\Exception $th){
+            return response()->json([
+                'status'=>false,
+                'message'=>'The Book is not found'
+            ],400);
+        };
     }
 
     /**

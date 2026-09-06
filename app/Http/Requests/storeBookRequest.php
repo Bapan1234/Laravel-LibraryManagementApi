@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class storeBookRequest extends FormRequest
 {
@@ -25,10 +26,14 @@ class storeBookRequest extends FormRequest
         return [
             'title'=>'required|string|max:255',
             'description'=>'nullable|string',
-            'isbn'=>'required|integer',
-            'author_id'=>'required|integer',
+            'isbn'=>['required','string',
+                    Rule::unique('books','isbn')->ignore($this->route('book')->id)],
+            'author_id'=>'required|exists:authors,id',
+            'genre'=>'nullable|string',
             'publish_at'=>'nullable|date',
-            'price'=>'nullable',
+            'total_copies'=>'required|min:1',
+            'price'=>'nullable|numeric|min:0',
+            'cover_image'=>'nullable|string'
         ];
     }
 }
