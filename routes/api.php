@@ -1,18 +1,22 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AuthorController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\BorrowingController;
 use App\Http\Controllers\MemberController;
+use App\Models\Book;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
+
 
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-Route::post('/register', [AuthorController::class,'register']);
-Route::post('/login',[AuthorController::class,'login']);
+Route::post('register', [AuthController::class,'register']);
+Route::post('login',[AuthController::class,'login']);
 
 Route::apiResource('authors', AuthorController::class);
 Route::apiResource('books', BookController::class);
