@@ -18,19 +18,25 @@ Route::get('/user', function (Request $request) {
 Route::post('register', [AuthController::class,'register']);
 Route::post('login',[AuthController::class,'login']);
 
-Route::apiResource('authors', AuthorController::class);
-Route::apiResource('books', BookController::class);
-Route::apiResource('members', MemberController::class);
-Route::apiResource('borrowings',BorrowingController::class)->only(['index','store','show']);
-Route::post('/borrowings/{borrowing}/return', [BorrowingController::class,'returnBook']);
-Route::get('/borrowings/overdue/list',[BorrowingController::class, 'overDue']);
+Route::middleware('auth:sanctum')->group(function(){
 
-Route::get('statices',function(){
-return response()->json([
-'total_books'=>App\Models\Book::count(),
-'total_authors'=>App\Models\Author::count(),
-'total_member'=>App\Models\Member::count(),
-'total_borrowed'=>App\Models\Borrowing::where('status','borrowed')->count(),
-'total_borrowing'=>App\Models\Borrowing::where('status','overdue')->count(),
-]);
+    Route::apiResource('authors', AuthorController::class);
+    Route::apiResource('books', BookController::class);
+    Route::apiResource('members', MemberController::class);
+    Route::apiResource('borrowings',BorrowingController::class)->only(['index','store','show']);
+    Route::post('/borrowings/{borrowing}/return', [BorrowingController::class,'returnBook']);
+    Route::get('/borrowings/overdue/list',[BorrowingController::class, 'overDue']);
+
+    Route::get('statices',function(){
+        return response()->json([
+            'total_books'=>App\Models\Book::count(),
+            'total_authors'=>App\Models\Author::count(),
+            'total_member'=>App\Models\Member::count(),
+            'total_borrowed'=>App\Models\Borrowing::where('status','borrowed')->count(),
+            'total_borrowing'=>App\Models\Borrowing::where('status','overdue')->count(),
+        ]);
+    });
+
 });
+
+
