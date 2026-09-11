@@ -96,4 +96,9 @@ class BookController extends Controller
         }
 
     }
+
+    public function firstFiveBook(){
+        $book = Book::latest()->take(5)->get();
+        return BookResource::collection($book);
+    }
 }

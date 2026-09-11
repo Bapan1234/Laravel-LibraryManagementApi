@@ -39,6 +39,10 @@ Route::middleware('auth:sanctum')->group(function(){
             ]);
         });
     });
+
+    Route::prefix('v2')->group(function(){
+        Route::get('/latestFiveBook',[BookController::class, 'firstFiveBook']);
+    });
 });
 
 
